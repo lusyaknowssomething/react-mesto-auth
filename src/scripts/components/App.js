@@ -50,20 +50,19 @@ const App = () => {
 
   const [selectedCard, setSelectedCard] = React.useState(null);
   const [cardForDelete, setCardForDelete] = React.useState(null);
-
-  const [state, setState] = React.useState({ loggedIn: false, userData: null });
+  const [loggining, setLoggining] = React.useState({ loggedIn: false});
   const [email, setEmail] = React.useState(null);
 
   function tokenCheck() {
-    if (!localStorage.getItem("token")) return;
-
     const token = localStorage.getItem("token");
+    if (!token) return;
+
     auth
       .checkToken(token)
       .then((res) => {
         if (!res) return;
         setEmail(res.data.email);
-        setState({
+        setLoggining({
           loggedIn: true
         });
         history.push("/cards");
@@ -94,7 +93,7 @@ const App = () => {
     setIsEditAvatarPopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setIsDeletePopupOpen(false);
-    setRegisterPopupOpen(false);
+    setInfoTooltipPopupOpen(false);
     setSelectedCard(null);
     setCardForDelete(null);
   }
@@ -196,22 +195,23 @@ const App = () => {
     if (!token) return;
     setEmail(email)
     localStorage.setItem("token", token);
-    setState((old) => ({ ...old, loggedIn: true }));
+    setLoggining((old) => ({ ...old, loggedIn: true }));
     history.push("/cards");
   }
 
   const [isSuccsess, setIsSuccsess] = React.useState(null);
 
-  const [registerPopupOpen, setRegisterPopupOpen] = React.useState(null);
+  const [infoTooltipPopupOpen, setInfoTooltipPopupOpen] = React.useState(null);
 
-  function handleRegister(boolean) {
-    history.push("/sign-in");
-    setRegisterPopupOpen(boolean);
+  function handleInfoTooltip(boolean, historyPush, register) {
+    if(historyPush) {history.push("/sign-in")};
+    if(register) {setLoggining(false)}
+    setInfoTooltipPopupOpen(boolean);
   }
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
-      <AppContext.Provider value={{loggedIn: state.loggedIn, email: email}}>
+      <AppContext.Provider value={{loggedIn: loggining.loggedIn, email: email}}>
         <div className="page">
           <Header />
           <Switch>
@@ -229,15 +229,15 @@ const App = () => {
             />
             <Route path="/sign-up">
               <Register
-                handleRegister={handleRegister}
+                handleInfoTooltip={handleInfoTooltip}
                 setIsSuccsess={setIsSuccsess}
               />
             </Route>
             <Route path="/sign-in">
-              <Login handleLogin={handleLogin} />
+              <Login handleLogin={handleLogin} handleInfoTooltip={handleInfoTooltip} setIsSuccsess={setIsSuccsess} />
             </Route>
             <Route exact path="/">
-              {state.loggedIn ? <Redirect to="/cards" /> : <Redirect to="/sign-in" />}
+              {loggining.loggedIn ? <Redirect to="/cards" /> : <Redirect to="/sign-in" />}
             </Route>
           </Switch>
         </div>
@@ -270,7 +270,7 @@ const App = () => {
         <ImagePopup card={selectedCard} onClose={closeAllPopups} />
         <InfoTooltip
           onClose={closeAllPopups}
-          register={registerPopupOpen}
+          register={infoTooltipPopupOpen}
           isSuccsess={isSuccsess}
         />
       </AppContext.Provider>

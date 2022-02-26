@@ -24,14 +24,13 @@ function Register(props) {
     const { password, email } = state;
     if(!password || !email) return;
     auth.register(password, email)
-      .then((data)=> {
-        setState(old => ({...old, message: 'Вы успешно зарегистрировались!'}));
-        props.handleRegister(true);
+      .then(()=> {
+        props.handleInfoTooltip(true, true);
         props.setIsSuccsess(true)
       })
       .catch((err) => {
         console.log(err)
-        props.handleRegister(true);
+        props.handleInfoTooltip(true, false, true);
         props.setIsSuccsess(false)
       });
   };

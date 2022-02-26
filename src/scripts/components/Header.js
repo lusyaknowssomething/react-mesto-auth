@@ -3,7 +3,7 @@ import React from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import AppContext from "../../contexts/AppContext";
 
-function Header({email, loggedIn}) {
+function Header() {
   const history = useHistory();
   const value = React.useContext(AppContext);
 
@@ -19,7 +19,7 @@ function Header({email, loggedIn}) {
       {value.loggedIn ?
         <div className="header__login">
           <p className="header__email">{value.email}</p>
-          <button className="header__button" onClick={signOut}>Выход</button>
+          <button className="header__button" onClick={signOut}>Выйти</button>
         </div>
         : ( (location.pathname === '/sign-in') ? (<Link className="header__link" to='/sign-up'>Регистрация</Link>) : (<Link className="header__link" to='/sign-in'>Войти</Link>))
       }

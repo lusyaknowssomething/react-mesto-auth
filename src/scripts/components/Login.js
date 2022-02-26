@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import * as auth from "../utils/auth";
 
-function Login({ handleLogin }) {
+function Login({ handleLogin, handleInfoTooltip, setIsSuccsess }) {
   const [state, setState] = useState({
     password: '',
     email: '',
@@ -24,18 +24,18 @@ function Login({ handleLogin }) {
     auth.authorize(password, email)
     .then((data) => {
       if (!data.token){
-        setState(old => ({
-          ...old,
-          message: 'Что-то пошло не так!',
-        }));
-        console.log('not')
+        handleInfoTooltip(true, false);
+        setIsSuccsess(false)
         return;
       }
 
       handleLogin(data.token, email);
       setState({password: '', email: ''});
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      handleInfoTooltip(true, false);
+      setIsSuccsess(false);
+      console.log(err)});
 
   }
 
